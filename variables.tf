@@ -8,7 +8,7 @@ variable "location" {
   type        = string
 }
 
-variable "network_security_groups" {
+variable "network_security_groupsCfg" {
   description = "Object containing deployment information for subnets."
   type        = any
   default = {
@@ -55,6 +55,11 @@ variable "network_security_groups" {
       ]
     }
   }
+}
+
+variable "subnetsCfg" {
+  description = "Object containing deployment information for subnets."
+  type        = any
 }
 
 variable "subnet_id_map" {

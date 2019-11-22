@@ -7,7 +7,7 @@ locals {
 }
 
 resource "azurerm_network_security_group" "this" {
-  for_each            = var.network_security_groups
+  for_each            = var.network_security_groupsCfg
   resource_group_name = var.resource_group_name
   location            = local.location
   name                = each.value["name"]
