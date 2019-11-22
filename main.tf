@@ -1,7 +1,15 @@
+data "azurerm_resource_group" "netrg" {
+  name = var.resource_group_name
+}
+
+locals {
+  location = var.location == "" ? data.azurerm_resource_group.netrg.location : var.location
+}
+
 resource "azurerm_network_security_group" "this" {
   for_each            = var.network_security_groups
   resource_group_name = var.resource_group_name
-  location            = var.location
+  location            = local.location
   name                = each.value["name"]
 
 

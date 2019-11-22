@@ -61,3 +61,9 @@ variable "subnet_id_map" {
   description = "Map of the names and id of the created subnets."
   type        = map
 }
+
+variable "tags" {
+  description = "Tags to add to the virtual network."
+  default     = {}
+  type        = map
+}
