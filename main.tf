@@ -1,17 +1,23 @@
-data "azurerm_resource_group" "netrg" {
+data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
 locals {
-  location = var.location == "" ? data.azurerm_resource_group.netrg.location : var.location
+  location = var.location == "" ? data.azurerm_resource_group.rg.location : var.location
+
+  subnet_names_network_security_group = [for x in var.subnets_config : "${x.name}" if lookup(x, "nsg_key", "null") != "null"]
+  subnet_nsg_keys_network_security_group = [for x in var.subnets_config : {
+    subnet_name = x.name
+    nsg_key     = x.nsg_key
+  } if lookup(x, "nsg_key", "null") != "null"]
+  subnets_network_security_group = zipmap(local.subnet_names_network_security_group, local.subnet_nsg_keys_network_security_group)
 }
 
 resource "azurerm_network_security_group" "this" {
-  for_each            = var.network_security_groupsCfg
-  resource_group_name = var.resource_group_name
+  for_each            = var.network_security_groups_config
+  resource_group_name = data.azurerm_resource_group.rg.name
   location            = local.location
   name                = each.value["name"]
-
 
   dynamic "security_rule" {
     for_each = each.value["security_rules"]
@@ -40,17 +46,8 @@ resource "azurerm_network_security_group" "this" {
   )
 }
 
-locals {
-  subnet_names_network_security_group = [for x in var.subnetsCfg : "${x.name}" if lookup(x, "nsg_key", "null") != "null"]
-  subnet_nsg_keys_network_security_group = [for x in var.subnetsCfg : {
-    subnet_name = x.name
-    nsg_key     = x.nsg_key
-  } if lookup(x, "nsg_key", "null") != "null"]
-  subnets_network_security_group = zipmap(local.subnet_names_network_security_group, local.subnet_nsg_keys_network_security_group)
-}
-
 resource "azurerm_subnet_network_security_group_association" "this_association" {
   for_each                  = local.subnets_network_security_group
   network_security_group_id = lookup(azurerm_network_security_group.this, each.value["nsg_key"], null)["id"]
-  subnet_id                 = lookup(var.subnet_id_map, each.value["subnet_name"], null)["id"]
+  subnet_id                 = lookup(var.subnets_ids_map, each.value["subnet_name"], null)
 }
