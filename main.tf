@@ -1,6 +1,14 @@
+#####
+# Datasources
+#####
+
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
+
+#####
+# Locals
+#####
 
 locals {
   location = var.location == "" ? data.azurerm_resource_group.rg.location : var.location
@@ -12,6 +20,10 @@ locals {
   } if lookup(x, "nsg_key", "null") != "null"]
   subnets_network_security_group = zipmap(local.subnet_names_network_security_group, local.subnet_nsg_keys_network_security_group)
 }
+
+#####
+# Resources
+#####
 
 resource "azurerm_network_security_group" "this" {
   for_each            = var.network_security_groups_config
