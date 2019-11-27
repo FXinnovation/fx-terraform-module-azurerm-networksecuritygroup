@@ -62,7 +62,7 @@ resource "azurerm_subnet_network_security_group_association" "this_association" 
   for_each = local.subnets_network_security_group
 
   lifecycle {
-    ignore_changes = [route_table_id, subnet_id]
+    ignore_changes = [network_security_group_id, subnet_id]
   }
 
   network_security_group_id = lookup(azurerm_network_security_group.this, each.value["nsg_key"], null)["id"]
