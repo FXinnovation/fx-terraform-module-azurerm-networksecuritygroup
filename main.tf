@@ -59,7 +59,12 @@ resource "azurerm_network_security_group" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this_association" {
-  for_each                  = local.subnets_network_security_group
+  for_each = local.subnets_network_security_group
+
+  lifecycle {
+    ignore_changes = [route_table_id, subnet_id]
+  }
+
   network_security_group_id = lookup(azurerm_network_security_group.this, each.value["nsg_key"], null)["id"]
   subnet_id                 = lookup(var.subnets_ids_map, each.value["subnet_name"], null)
 }
