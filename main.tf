@@ -26,7 +26,7 @@ locals {
 #####
 
 resource "azurerm_network_security_group" "this" {
-  for_each            = var.network_security_groups_config
+  for_each            = var.enabled ? var.network_security_groups_config : {}
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = local.location
   name                = each.value["name"]
@@ -59,7 +59,7 @@ resource "azurerm_network_security_group" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this_association" {
-  for_each = local.subnets_network_security_group
+  for_each = var.enabled ? local.subnets_network_security_group : {}
 
   lifecycle {
     ignore_changes = [network_security_group_id, subnet_id]
