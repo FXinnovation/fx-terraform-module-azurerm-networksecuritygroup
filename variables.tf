@@ -10,7 +10,7 @@ variable "resource_group_name" {
 
 variable "location" {
   description = "Location of where the NSGs will live in. Needs to be same as virtual network."
-  default     = ""
+  type        = string
 }
 
 variable "network_security_groups_config" {

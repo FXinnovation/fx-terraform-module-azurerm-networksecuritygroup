@@ -1,18 +1,8 @@
 #####
-# Datasources
-#####
-
-data "azurerm_resource_group" "rg" {
-  name = var.resource_group_name
-}
-
-#####
 # Locals
 #####
 
 locals {
-  location = var.location == "" ? data.azurerm_resource_group.rg.location : var.location
-
   subnet_names_network_security_group = [for x in var.subnets_config : "${x.name}" if lookup(x, "nsg_key", "null") != "null"]
   subnet_nsg_keys_network_security_group = [for x in var.subnets_config : {
     subnet_name = x.name
@@ -27,8 +17,8 @@ locals {
 
 resource "azurerm_network_security_group" "this" {
   for_each            = var.enabled ? var.network_security_groups_config : {}
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = local.location
+  resource_group_name = var.resource_group_name
+  location            = var.location
   name                = each.value["name"]
 
   dynamic "security_rule" {
