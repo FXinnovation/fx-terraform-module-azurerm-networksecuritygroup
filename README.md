@@ -10,7 +10,7 @@ This module is used to deploy multiple network security groups (NSG) and link th
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | enabled | Enable or disable module | string | `"true"` | no |
-| location | Location of where the NSGs will live in. Needs to be same as virtual network. | string | `""` | no |
+| location | Location of where the NSGs will live in. Needs to be same as virtual network. | string | n/a | yes |
 | network\_security\_groups\_config | Object containing deployment information for subnets. | any | n/a | yes |
 | resource\_group\_name | Name of the resource group where the vnet is hosted. | string | n/a | yes |
 | subnets\_config | Object containing deployment information for subnets. | any | n/a | yes |
